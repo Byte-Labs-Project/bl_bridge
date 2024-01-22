@@ -1,90 +1,81 @@
-local menuName = 'qb-radialmenu'
-if GetResourceState(menuName) ~= 'started' then
-    error(menuName..' isn\'t starting')
-    return
-end
+---@diagnostic disable: duplicate-set-field
 
-local qb_radial = exports[menuName]
-local Radial = {}
-local menu = lib
-local callback = menu.callback
-local Utils = require 'utils'
-local eventIndex = 0
-local storedEvents = {}
+
+Radial = {}
+
+local qbRadial = exports['qb-radialmenu']
+
 
 local overRideData = {
-    title = {
-        originalMethod = 'label',
+    id = {
+        originalMethod = 'id',
+    },
+    txt = {
+        originalMethod = 'description',
     },
     icon = {
         originalMethod = 'icon',
     },
-    id = {
+    menu = {
         originalMethod = 'menu',
     },
-    shouldClose = {
-        originalMethod = 'keepOpen',
-        modifier = {
-            executeFun = true,
-            effect = function(value)
-                return type(value) ~= 'boolean' and true or not value
-            end
-        }
-    },
-    event = {
-        originalMethod = 'onSelect',
-        modifier = {
-            executeFun = true,
-            effect = function(value)
-                local eventName = ("bl_bridge:client:radialId%s"):format(eventIndex)
-                eventIndex+= 1
-                return {eventName = eventName, eventId = AddEventHandler(eventName, value)}
-            end
-        }
+    label = {
+        originalMethod = 'title',
     },
 }
 
-function Radial.addOptions(optionId, data)
-    local id = callback.await('UUID', false, 8)
+---@param items RadialMenuItem | RadialMenuItem[]
+function Radial.addOption(items)
 
-    local title, icon, items in data
-    items = Utils.retreiveNumberIndexedData(items, overRideData)
-    for _,v in ipairs(items) do
-        v.type = 'client'
-        
-        if v.event then
-            local eventName, eventId in v.event
-            local menuId = v.menu or #storedEvents+1
-            storedEvents[menuId] = eventId
+    if type(items) == 'table' then
+        for _, item in ipairs(items) do
+            local id = item.id
 
-            v.menu = menuId
-            v.event = eventName
-        end
-    end
-    qb_radial:AddOption({
-        id = optionId,
-        title = title or 'Unknown',
-        icon = icon or 'hand',
-        items = items
-    }, id)
-end
-
-Radial.addOptions('police2', {
-    title = 'sdfsafd',
-    items = {
-        {
-            label = 'Search',
-            icon = 'magnifying-glass',
-            keepOpen = true,
-            onSelect = function()
-              print('Search')
+            for key, value in pairs(overRideData) do
+                if item[key] then
+                    item[value.originalMethod] = item[key]
+                    item[key] = nil
+                end
             end
-        }
-      },
-})
 
-function Radial.removeOption(onExit)
-    
+            qbRadial:AddOption(item, id)
+        end
+    else
+        local id = items.id
+
+
+        qbRadial:AddOption(items, id)
+    end
 end
 
-return Radial
+---@param id string
+function Radial.removeOption(id)
+    qbRadial:RemoveOption(id)
+end
+
+---Registers a radial sub menu with predefined options.
+---@param radial RadialMenuProps
+function Radial.registerRadial(radial)
+    -- lib.registerRadial(radial)
+    return
+end
+
+---Removes all items from the global radial menu.
+function Radial.clear()
+    -- lib.clearRadialItems()
+    return
+end
+
+
+---Disables the global radial menu.
+---@param state boolean
+function Radial.disable(state)
+    -- lib.disableRadial(state)
+    return
+end
+
+---Returns the current radial menu id.
+function Radial.getCurrentId()
+    -- return lib.getCurrentRadialId()
+    return
+end

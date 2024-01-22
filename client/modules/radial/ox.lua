@@ -1,28 +1,37 @@
-local Radial = {}
-local menu = lib
-local callback = menu.callback
+---@diagnostic disable: duplicate-set-field
 
-function Radial.addOptions(optionId, data)
-    local id = callback.await('UUID', false, 8)
 
-    local title, icon, items in data
-    lib.registerRadial({
-        id = id,
-        items = items
-    })
+Radial = {}
 
-    lib.addRadialItem({
-        {
-            id = optionId,
-            label = title or 'Unknown',
-            icon = icon or 'hand',
-            menu = id
-        },
-    })
+---@param items RadialMenuItem | RadialMenuItem[]
+function Radial.addOption(items)
+    lib.addRadialItem(items)
 end
 
-function Radial.removeOption(onExit)
-    
+---@param id string
+function Radial.removeOption(id)
+    lib.removeRadialItem(id)
 end
 
-return Radial
+---Registers a radial sub menu with predefined options.
+---@param radial RadialMenuProps
+function Radial.registerRadial(radial)
+    lib.registerRadial(radial)
+end
+
+---Removes all items from the global radial menu.
+function Radial.clear()
+    lib.clearRadialItems()
+end
+
+
+---Disables the global radial menu.
+---@param state boolean
+function Radial.disable(state)
+    lib.disableRadial(state)
+end
+
+---Returns the current radial menu id.
+function Radial.getCurrentId()
+    return lib.getCurrentRadialId()
+end
