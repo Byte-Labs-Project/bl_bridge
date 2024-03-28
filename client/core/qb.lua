@@ -62,4 +62,8 @@ function Core.getPlayerData()
     return wrappedPlayer.playerData
 end
 
+function Core.playerLoaded()
+    return LocalPlayer.state.isLoggedIn
+end
+
 return Core

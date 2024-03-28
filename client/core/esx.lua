@@ -54,4 +54,8 @@ function Core.getPlayerData()
     return wrappedPlayer.playerData
 end
 
+function Core.playerLoaded()
+    return shared.IsPlayerLoaded()
+end
+
 return Core

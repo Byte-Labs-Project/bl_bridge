@@ -65,4 +65,8 @@ function Core.getPlayerData()
     return wrappedPlayer.playerData
 end
 
+function Core.playerLoaded()
+    return loaded
+end
+
 return Core
